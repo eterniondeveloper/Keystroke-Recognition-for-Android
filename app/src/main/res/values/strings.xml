@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Keystroke Recognition for Android</string>
+    <string name="login_button_text">Login</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_up_text_view_text"><u>Sign Up</u></string>
+</resources>
