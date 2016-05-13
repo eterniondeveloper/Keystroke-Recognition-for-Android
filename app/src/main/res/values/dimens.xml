@@ -7,4 +7,5 @@
     <dimen name="login_button_size">18sp</dimen>
     <dimen name="login_form_horizontal_padding">10dp</dimen>
     <dimen name="login_form_vertical_padding">10dp</dimen>
+    <dimen name="training_fragment_object_vertical_margin">20dp</dimen>
 </resources>

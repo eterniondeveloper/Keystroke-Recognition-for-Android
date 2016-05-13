@@ -40,7 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         new EndpointsAsyncTask().execute(new Pair<Context, User>(this, user));*/
 
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, TrainingActivity.class);
         startActivity(i);
     }
 
@@ -50,4 +50,5 @@ public class SignUpActivity extends AppCompatActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
+
 }

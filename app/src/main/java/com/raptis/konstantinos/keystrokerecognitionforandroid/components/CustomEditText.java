@@ -7,11 +7,13 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid.components;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
 import com.raptis.konstantinos.keystrokerecognitionforandroid.MainActivity;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 
 /**
  * Created by kwnstantinos on 27/3/2016.
@@ -47,6 +49,7 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
     // on key up
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.i(Helper.KEY_PRESSED, "onKeyUp: " + keyCode);
         if(event.getKeyCode() != 4) {   // 4 is back (not 100% sure)
             MainActivity.keyHandler.keyReleased(keyCode);
         }
@@ -56,6 +59,7 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
     // on key down
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.i(Helper.KEY_PRESSED, "onKeyDown: " + keyCode);
         if(event.getKeyCode() != 4) { // 4 is back (not 100% sure)
             MainActivity.keyHandler.keyPressed(keyCode);
         }
