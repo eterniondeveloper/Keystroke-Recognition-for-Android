@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * Created by konstantinos on 11/5/2016.
- */
+import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 
 /**
  * Created by konstantinos on 10/5/2016.
@@ -32,16 +32,21 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
-        /*User user = new User();
-        user.setEmail(signUpEmailEditText.getText().toString());
-        user.setPassword(signUpPasswordEditText.getText().toString());
-        user.setFirstName(signUpFirstNameEditText.getText().toString());
-        user.setLastName(signUpLastNameEditText.getText().toString());
+        if (!Helper.isEmpty(signUpEmailEditText) && !Helper.isEmpty(signUpPasswordEditText) &&
+                !Helper.isEmpty(signUpFirstNameEditText) && !Helper.isEmpty(signUpLastNameEditText)) {
+            User user = new User();
+            user.setEmail(signUpEmailEditText.getText().toString());
+            user.setPassword(signUpPasswordEditText.getText().toString());
+            user.setFirstName(signUpFirstNameEditText.getText().toString());
+            user.setLastName(signUpLastNameEditText.getText().toString());
 
-        new EndpointsAsyncTask().execute(new Pair<Context, User>(this, user));*/
-
-        Intent i = new Intent(this, TrainingActivity.class);
-        startActivity(i);
+            Intent i = new Intent(this, TrainingActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.putExtra("user", user);
+            startActivity(i);
+        } else {
+            Toast.makeText(SignUpActivity.this, Helper.NOT_ALL_FIELDS_FILLED, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

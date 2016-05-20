@@ -2,10 +2,11 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
 import android.util.Log;
 
+import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.KeyObject;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.DigraphType;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.util.KeyObject;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Orientation;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Status;
 
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class KeyHandler {
 
     // keys primary code mapping (Contain keys for which we want to maintain digraph type)
-    public static Key[] keys = {Key.ONE_BUTTON, Key.TWO_BUTTON, Key.THREE_BUTTON, Key.FOUR_BUTTON, Key.FIVE_BUTTON, Key.SIX_BUTTON, Key.SEVEN_BUTTON, Key.EIGHT_BUTTON, Key.NINE_BUTTON, Key.ZERO_BUTTON,
+    public static final Key[]keys = {Key.ONE_BUTTON, Key.TWO_BUTTON, Key.THREE_BUTTON, Key.FOUR_BUTTON, Key.FIVE_BUTTON, Key.SIX_BUTTON, Key.SEVEN_BUTTON, Key.EIGHT_BUTTON, Key.NINE_BUTTON, Key.ZERO_BUTTON,
             Key.Q_BUTTON, Key.W_BUTTON, Key.E_BUTTON, Key.R_BUTTON, Key.T_BUTTON, Key.Y_BUTTON, Key.U_BUTTON, Key.I_BUTTON, Key.O_BUTTON, Key.P_BUTTON,
             Key.A_BUTTON, Key.S_BUTTON, Key.D_BUTTON, Key.F_BUTTON, Key.G_BUTTON, Key.H_BUTTON, Key.J_BUTTON, Key.K_BUTTON, Key.L_BUTTON, Key.SHARP_BUTTON,
             Key.CAPS_LOCK_BUTTON, Key.Z_BUTTON, Key.X_BUTTON, Key.C_BUTTON, Key.V_BUTTON, Key.B_BUTTON, Key.N_BUTTON, Key.M_BUTTON, Key.FULL_STOP_BUTTON, Key.QUESTION_MARK_BUTTON,
@@ -25,38 +26,24 @@ public class KeyHandler {
             Key.AT_ANNOTATION_BUTTON, Key.EXCLAMATION_MARK_BUTTON, Key.COLON_BUTTON};
 
     // variables
-    private static final int MIN_BUFFER_SIZE = 5;
-    private static final int MAX_BUFFER_SIZE = 15;
     private int errorRateCounter = 0;
     public static HashMap<Integer, Key> keysMap;
-    private static long currentTimeReleased, previousTimeReleased,
-            currentTimePressed, previousTimePressed;
+    private static long timePressed, timeReleased;
     private static KeyObject currentKey;
     private Buffer buffer;
+    private User user;
 
     // constructor
-    public KeyHandler() {
-        this(MIN_BUFFER_SIZE);
-    }
-
-    // constructor
-    public KeyHandler(int size) {
+    public KeyHandler(int size, User user) {
         // create key map
         keysMap = new HashMap<>();
         for (Key key : keys) {
             keysMap.put(key.getPrimaryCode(), key);
         }
         // initialize buffer
-        if(size > MAX_BUFFER_SIZE) {
-            buffer = new Buffer(MAX_BUFFER_SIZE);
-            System.out.println("Buffer size (auto setting) to MAX_BUFFER_SIZE. (15)");
-        } else if (size < MIN_BUFFER_SIZE) {
-            buffer = new Buffer(MIN_BUFFER_SIZE);
-            System.out.println("Buffer size (auto setting) to MIN_BUFFER_SIZE. (5)");
-        } else {
-            buffer = new Buffer(size);
-            System.out.println("Buffer size (" + size + ")");
-        }
+        buffer = new Buffer(size);
+        // initialize user
+        this.user = user;
     }
 
     public boolean add(KeyObject keyObject) {
@@ -67,7 +54,19 @@ public class KeyHandler {
 
         // Status inactive keys for now : space, delete, done
         if (keysMap.get(keyObject.getPrimaryCode()).getStatus() == Status.INACTIVE) {
+            // check if delete pressed
+            if (keyObject.getPrimaryCode() == Key.DELETE_BUTTON.getPrimaryCode()) {
+                errorRateCounter++;
+            }
             return false; // we don't want to buffer status = inactive keys
+        }
+
+        /**
+         * CHECK IF TYPED KEY EXIST IN THE SAME SPOT THAT BUFFER INDEX CURRENTLY POINT
+         */
+
+        if (keyObject.getKeyChar() != user.getPassword().charAt(buffer.getIndex())) {
+            return false;
         }
 
         /**
@@ -88,6 +87,11 @@ public class KeyHandler {
         return true;
     }
 
+    // clear buffer
+    public void clearBuffer() {
+        buffer = new Buffer(buffer.getSize());
+    }
+
     // get buffer
     public Buffer getBuffer() {
         return buffer;
@@ -102,30 +106,15 @@ public class KeyHandler {
     public void keyPressed(int primaryCode) {
         //Log.i(Helper.TEST_LOG, primaryCode + "");
         //--------------------------------------
-        if (currentTimePressed == 0 && previousTimePressed == 0) {
-            currentTimePressed = System.nanoTime();
-            previousTimePressed = System.nanoTime();
-        } else {
-            currentTimePressed = System.nanoTime();
-        }
+        timePressed = System.nanoTime();
     }
 
     // key released
     public void keyReleased(int primaryCode) {
         //Log.i(Helper.TEST_LOG, primaryCode + "");
         //--------------------------------------
-        if (currentTimeReleased == 0 && previousTimeReleased == 0) {
-            currentTimeReleased = System.nanoTime();
-            previousTimeReleased = System.nanoTime();
-            currentKey = new KeyObject(primaryCode, -1, currentTimePressed, currentTimeReleased);    // negative time in order to show
-        } else {
-            currentTimeReleased = System.nanoTime();
-            double timePassed = (double) ((currentTimeReleased - previousTimePressed) / 1000000);  // milliseconds
-            previousTimePressed = currentTimePressed;
-            currentKey = new KeyObject(primaryCode, timePassed, currentTimePressed, currentTimeReleased);
-            Log.i(Helper.CM_LOG, "Time passed : " + timePassed + " ms" + "\n");
-            previousTimeReleased = currentTimeReleased;
-        }
+        timeReleased = System.nanoTime();
+        currentKey = new KeyObject(primaryCode, keysMap.get(primaryCode).getKeyChar(), timePressed, timeReleased);
         // add key object to buffer
         boolean result = add(currentKey);
         ///////////////////////////

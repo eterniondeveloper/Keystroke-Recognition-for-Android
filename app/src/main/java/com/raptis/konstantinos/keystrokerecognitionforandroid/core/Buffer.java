@@ -1,8 +1,9 @@
 package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
-import com.raptis.konstantinos.keystrokerecognitionforandroid.util.KeyObject;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.KeyObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Buffer {
 	
@@ -38,7 +39,7 @@ public class Buffer {
 		bufferArray[index] = keyObject;
         index++;
     }
-	
+
 	public KeyObject getCurrent() {
 		return current;
 	}
@@ -46,7 +47,11 @@ public class Buffer {
 	public KeyObject getPrevious() {
 		return previous;
 	}
-	
+
+	public List<KeyObject> getAsList() {
+		return Arrays.asList(bufferArray);
+	}
+
 	public int getSize() {
 		return BUFFER_SIZE;
 	}
@@ -54,5 +59,25 @@ public class Buffer {
 	public String display() {
 		return Arrays.toString(bufferArray);
 	}
-	
+
+	public KeyObject getFirst() {
+		return bufferArray[0];
+	}
+
+	public KeyObject getLast() {
+		return bufferArray[bufferArray.length - 1];
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public KeyObject getElement(int position) {
+		if(position >= 0 && position < bufferArray.length) {
+			return bufferArray[position];
+		} else {
+			return null;
+		}
+	}
+
 }

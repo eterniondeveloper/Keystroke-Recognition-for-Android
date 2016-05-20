@@ -4,4 +4,6 @@
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="sign_up_text_view_text"><u>Sign Up</u></string>
+    <string name="training_text_view_text">Type your Password</string>
+    <string name="train_button_text">Train</string>
 </resources>

@@ -6,26 +6,38 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid.components;
 
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
 
-import com.raptis.konstantinos.keystrokerecognitionforandroid.MainActivity;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.core.KeyHandler;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
 
 /**
  * Created by kwnstantinos on 27/3/2016.
  */
-public class CustomEditText extends EditText implements View.OnKeyListener {
+public class CustomEditText extends EditText {
+
+    private KeyHandler keyHandler;
+    private User user;
+    private boolean ready = false;
+
+    // init
+    public void init(User user) {
+        this.user = user;
+        keyHandler = new KeyHandler(user.getPassword().length(), user);
+    }
 
     // constructor
     public CustomEditText(Context context) {
         super(context);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        //setOnKeyListener(this);
     }
 
     // constructor
@@ -33,7 +45,6 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
         super(context, attributeSet);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setOnKeyListener(this);
     }
 
     // constructor
@@ -41,7 +52,6 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
         super(context, attributeSet, defStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setOnKeyListener(this);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -49,9 +59,24 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
     // on key up
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.i(Helper.KEY_PRESSED, "onKeyUp: " + keyCode);
-        if(event.getKeyCode() != 4) {   // 4 is back (not 100% sure)
-            MainActivity.keyHandler.keyReleased(keyCode);
+        Log.i(Helper.KEY_PRESSED, "onKeyUp: keyCode" + keyCode + " ; event.getKeyCode(): " + event.getKeyCode());
+        if(event.getKeyCode() != Key.DONE_BUTTON.getPrimaryCode() &&
+                event.getKeyCode() != 4) {
+            keyHandler.keyReleased(keyCode);
+        }
+
+        // check if typed password match user password
+        // if yes turn line indicator green
+        if(this.getText().toString().equals(user.getPassword())) {
+            this.getBackground().mutate().setColorFilter(Color.parseColor("#16A085"), PorterDuff.Mode.SRC_ATOP);
+            ready = true;
+        } else if(this.getText().toString().equals("")) {
+            this.getBackground().mutate().setColorFilter(Color.parseColor("#757575"), PorterDuff.Mode.SRC_ATOP);
+            ready = false;
+
+        } else {
+            this.getBackground().mutate().setColorFilter(Color.parseColor("#E74C3C"), PorterDuff.Mode.SRC_ATOP);
+            ready = false;
         }
         return super.onKeyUp(keyCode, event);
     }
@@ -59,22 +84,31 @@ public class CustomEditText extends EditText implements View.OnKeyListener {
     // on key down
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.i(Helper.KEY_PRESSED, "onKeyDown: " + keyCode);
-        if(event.getKeyCode() != 4) { // 4 is back (not 100% sure)
-            MainActivity.keyHandler.keyPressed(keyCode);
+        Log.i(Helper.KEY_PRESSED, "onKeyDown: " + keyCode + " ; event.getKeyCode(): " + event.getKeyCode());
+        if(event.getKeyCode() != Key.DONE_BUTTON.getPrimaryCode() &&
+                event.getKeyCode() != 4) {
+            keyHandler.keyPressed(keyCode);
         }
         return super.onKeyDown(keyCode, event);
     }
 
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        return false;
+    // return true if editText is empty or false if not
+    public boolean isEmpty() {
+        return this.getText().toString().trim().length() == 0;
     }
 
-    @Override
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        return super.onKeyPreIme(keyCode, event);
+    public User getUser() {
+        return user;
     }
+
+    public KeyHandler getKeyHandler() {
+        return keyHandler;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
 }
