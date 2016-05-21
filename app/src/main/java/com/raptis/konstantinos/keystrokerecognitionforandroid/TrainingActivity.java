@@ -3,8 +3,8 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by konstantinos on 13/5/2016.
  */
-public class TrainingActivity extends FragmentActivity {
+public class TrainingActivity extends AppCompatActivity {
 
     // variables
     private User user;
@@ -102,18 +102,18 @@ public class TrainingActivity extends FragmentActivity {
                             tempFUD.length, tempFD.length);
                 }
 
-                wekaConnector.train(tempFSE, tempFDD, tempFUU, tempFUD, tempFD, tempFAHT,
-                        cmEditText.getKeyHandler().getErrorRateCounter());
+                wekaConnector.setInstances(tempFSE, tempFDD, tempFUU, tempFUD, tempFD, tempFAHT,
+                        cmEditText.getKeyHandler().getErrorRateCounter(), WekaConnector.POSITIVE);
             }
 
             try {
-                boolean result = wekaConnector.saveToARFF(getApplicationContext());
+                boolean result = wekaConnector.saveToARFF(getApplicationContext(), user.getArffName());
                 result = MainActivity.connector.addUser(user);
                 Log.i(Helper.OUTPUT_LOG, "ARFF saved: " + result);
             } catch (IOException e) {
                 Log.i(Helper.OUTPUT_LOG, e.getMessage());
             }
-            wekaConnector.displayTrainingSet();
+            wekaConnector.displayInstancesSet();
 
             //--------------------------------------------------------------------------------------
 

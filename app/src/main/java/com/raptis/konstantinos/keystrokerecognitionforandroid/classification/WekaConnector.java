@@ -12,8 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import weka.classifiers.Classifier;
-import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -65,7 +63,7 @@ public class WekaConnector {
     private Attribute attrClass;
 
     private FastVector fvWekaAttributes;
-    private Instances trainingSet;
+    private Instances instancesSet;
 
     public WekaConnector(int numFDD, int numFUU, int numFUD, int numFD) {
         NUMBER_OF_FDD_FEATURES = numFDD;
@@ -165,11 +163,12 @@ public class WekaConnector {
         /*
         INIT TRAINING SET
          */
-        trainingSet = new Instances("Rel", fvWekaAttributes, 10);
+        instancesSet = new Instances("Rel", fvWekaAttributes, 10);
+        instancesSet.setClassIndex(instancesSet.numAttributes() - 1);
     }
 
-    public void train(double trFSE, double[] trFDD, double[] trFUU,
-                      double[] trFUD, double[] trFD, double trFAHT, int trFER) {
+    public void setInstances(double trFSE, double[] trFDD, double[] trFUU,
+                      double[] trFUD, double[] trFD, double trFAHT, int trFER, String theClass) {
         // fill training set
         Instance instance = new DenseInstance(NUMBER_OF_FEATURES);
         int index = 0;
@@ -204,68 +203,42 @@ public class WekaConnector {
         instance.setValue((Attribute) fvWekaAttributes.elementAt(index++), trFER);
 
         // set CLASS attribute
-        instance.setValue((Attribute) fvWekaAttributes.elementAt(index), POSITIVE);
+        if(theClass != null) {
+            instance.setValue((Attribute) fvWekaAttributes.elementAt(index), theClass);
+        }
 
         // add instance to training set
-        trainingSet.add(instance);
-    }
-
-    // save to ARFF
-    public boolean saveToARFF(Context context) throws IOException {
-        if(!trainingSet.isEmpty() && isExternalStorageWritable()) {
-            ArffSaver saver = new ArffSaver();
-            saver.setInstances(trainingSet);
-            File file = getARFFStorageDir(context, "test_train.arff");
-            saver.setFile(file);
-            saver.setDestination(file);   // **not** necessary in 3.5.4 and later
-            saver.writeBatch();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // load ARFF
-    public static Instances loadARFF(Context context) throws IOException {
-        if(isExternalStorageReadable()) {
-            File file = getARFFStorageDir(context, "test_train.arff");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            ArffLoader.ArffReader arff = new ArffLoader.ArffReader(reader);
-            Instances data = arff.getData();
-            data.setClassIndex(data.numAttributes() - 1);
-            return data;
-        } else {
-            Log.i(Helper.STORAGE_LOG, "External storage is not readable!");
-            return null;
-        }
-    }
-
-    // delete ARFF file
-    public boolean deleteARFF(Context context) {
-        if(isExternalStorageWritable()) {
-            File file = getARFFStorageDir(context, "test_train.arff");
-            return file.delete();
-        } else {
-            Log.i(Helper.STORAGE_LOG, "External storage is not writable!");
-            return false;
-        }
+        instancesSet.add(instance);
     }
 
     // display training set
-    public void displayTrainingSet() {
-        Log.i(Helper.OUTPUT_LOG, trainingSet.toString());
+    public void displayInstancesSet() {
+        Log.i(Helper.OUTPUT_LOG, instancesSet.toString());
     }
 
     // set classifier
     public static boolean test(Instances trainingSet, Instances testingSet) throws Exception {
-        // Create a naïve bayes classifier
-        Classifier cModel = (Classifier) new NaiveBayes();
-        cModel.buildClassifier(trainingSet);
+        //trainingSet.delete(0);
 
-        // Test the model
-        Evaluation eTest = new Evaluation(trainingSet);
-        eTest.evaluateModel(cModel, testingSet);
-        return true;
+        // Create a naïve bayes classifier
+        NaiveBayes nb =  new NaiveBayes();
+        nb.buildClassifier(trainingSet);
+
+        boolean result = false;
+
+        //for(Instance instance : testingSet) {
+            double currentClassDouble = nb.classifyInstance(testingSet.get(0));
+
+            switch ((int) currentClassDouble) {
+                case 0:
+                    result = true;
+                    break;
+                case 1:
+                    result = false;
+                    break;
+            }
+        //}
+        return result;
     }
 
     // getters
@@ -293,9 +266,54 @@ public class WekaConnector {
         return NUMBER_OF_FAHT_FEATURES;
     }
 
+    public Instances getInstancesSet() {
+        return instancesSet;
+    }
+
     //----------------------------------------------------------------------------------------------
     //  EXTERNAL STORAGE
     //----------------------------------------------------------------------------------------------
+
+    // delete ARFF file
+    public boolean deleteARFF(Context context, String arffName) {
+        if(isExternalStorageWritable()) {
+            File file = getARFFStorageDir(context, arffName);
+            return file.delete();
+        } else {
+            Log.i(Helper.STORAGE_LOG, "External storage is not writable!");
+            return false;
+        }
+    }
+
+    // save to ARFF file
+    public boolean saveToARFF(Context context, String arffName) throws IOException {
+        if(!instancesSet.isEmpty() && isExternalStorageWritable()) {
+            ArffSaver saver = new ArffSaver();
+            saver.setInstances(instancesSet);
+            File file = getARFFStorageDir(context, arffName);
+            saver.setFile(file);
+            saver.setDestination(file);   // **not** necessary in 3.5.4 and later
+            saver.writeBatch();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // load ARFF file
+    public static Instances loadARFF(Context context, String arffName) throws IOException {
+        if(isExternalStorageReadable()) {
+            File file = getARFFStorageDir(context, arffName);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            ArffLoader.ArffReader arff = new ArffLoader.ArffReader(reader);
+            Instances data = arff.getData();
+            data.setClassIndex(data.numAttributes() - 1);
+            return data;
+        } else {
+            Log.i(Helper.STORAGE_LOG, "External storage is not readable!");
+            return null;
+        }
+    }
 
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {

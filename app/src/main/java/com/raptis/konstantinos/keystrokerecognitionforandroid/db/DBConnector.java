@@ -38,6 +38,7 @@ public class DBConnector extends SQLiteOpenHelper {
     private static final String USER_PASSWORD = "user_password";
     private static final String USER_FIRST_NAME = "user_first_name";
     private static final String USER_LAST_NAME = "user_last_name";
+    private static final String USER_ARFF_FILE_NAME = "user_arff_file_name";    // training set file name (.arff)
 
     // training session
     private static final String TRAINING_SESSION_ID = "training_session_id";
@@ -55,7 +56,8 @@ public class DBConnector extends SQLiteOpenHelper {
             + USER_EMAIL + " TEXT PRIMARY KEY UNIQUE not null,"
             + USER_PASSWORD + " TEXT not null,"
             + USER_FIRST_NAME + " TEXT not null,"
-            + USER_LAST_NAME + " TEXT not null)";
+            + USER_LAST_NAME + " TEXT not null,"
+            + USER_ARFF_FILE_NAME + " TEXT not null)";
 
     // create training session table
     private static final String CREATE_TABLE_TRAINING_SESSION = "CREATE TABLE " + TRAINING_SESSION_TABLE + " ("
@@ -117,6 +119,7 @@ public class DBConnector extends SQLiteOpenHelper {
         values.put(USER_PASSWORD, user.getPassword());
         values.put(USER_FIRST_NAME, user.getFirstName());
         values.put(USER_LAST_NAME, user.getLastName());
+        values.put(USER_ARFF_FILE_NAME, user.getArffName());
 
         // Insert row
         return db.insert(USER_TABLE, null, values) != -1 ? true : false;
@@ -139,10 +142,12 @@ public class DBConnector extends SQLiteOpenHelper {
             tempPassword = cursor.getString(cursor.getColumnIndex(USER_PASSWORD));
             String tempFirstName = cursor.getString(cursor.getColumnIndex(USER_FIRST_NAME));
             String tempLastName = cursor.getString(cursor.getColumnIndex(USER_LAST_NAME));
+            String tempArffName = cursor.getString(cursor.getColumnIndex(USER_ARFF_FILE_NAME));
             user = new User();
             user.setEmail(tempEmail);
             user.setFirstName(tempFirstName);
             user.setLastName(tempLastName);
+            user.setArffName(tempArffName);
 
             // check if provided password match with created password came from database
             if (userPassword.equals(tempPassword)) {
@@ -167,10 +172,13 @@ public class DBConnector extends SQLiteOpenHelper {
             String tempPassword = cursor.getString(cursor.getColumnIndex(USER_PASSWORD));
             String tempFirstName = cursor.getString(cursor.getColumnIndex(USER_FIRST_NAME));
             String tempLastName = cursor.getString(cursor.getColumnIndex(USER_LAST_NAME));
+            String tempArffName = cursor.getString(cursor.getColumnIndex(USER_ARFF_FILE_NAME));
             user = new User();
             user.setEmail(tempEmail);
+            user.setPassword(tempPassword);
             user.setFirstName(tempFirstName);
             user.setLastName(tempLastName);
+            user.setArffName(tempArffName);
         }
         return user;
     }

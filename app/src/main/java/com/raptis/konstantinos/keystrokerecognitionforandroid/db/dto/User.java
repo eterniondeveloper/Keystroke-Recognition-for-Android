@@ -14,6 +14,7 @@ public class User implements Serializable {
     private String password;
     private String firstName;
     private String lastName;
+    private String arffName;
 
     // constructor
     public User() {
@@ -48,6 +49,10 @@ public class User implements Serializable {
         return email;
     }
 
+    public String getArffName() {
+        return arffName;
+    }
+
     // setters
 
     public void setEmail(String email) {
@@ -64,6 +69,10 @@ public class User implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setArffName(String arffName) {
+        this.arffName = arffName;
     }
 
     // to String

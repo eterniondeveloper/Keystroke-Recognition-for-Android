@@ -40,6 +40,12 @@ public class SignUpActivity extends AppCompatActivity {
             user.setFirstName(signUpFirstNameEditText.getText().toString());
             user.setLastName(signUpLastNameEditText.getText().toString());
 
+            //--------------------------------------------------------------------------------------
+            // this should be unique
+            //--------------------------------------------------------------------------------------
+
+            user.setArffName("test_train.arff");
+
             Intent i = new Intent(this, TrainingActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.putExtra("user", user);
