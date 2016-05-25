@@ -7,4 +7,9 @@
     <string name="training_text_view_text">Type your Password</string>
     <string name="train_button_text">Train</string>
     <string name="test_button_text">Test</string>
+    <string name="extract_features_item_text">Extract Features</string>
+    <string name="extract_button_text">Extract</string>
+    <string name="positive_radio_button_text">POSITIVE</string>
+    <string name="negative_radio_button_text">NEGATIVE</string>
+    <string name="radio_group_info_message">Choose POSITIVE if desirable user will type the password or NEGATIVE in any other case.</string>
 </resources>

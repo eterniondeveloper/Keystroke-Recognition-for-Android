@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.raptis.konstantinos.keystrokerecognitionforandroid.core.Buffer;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.KeyObject;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.core.KeyObject;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.DigraphType;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;

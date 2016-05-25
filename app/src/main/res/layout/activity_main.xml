@@ -14,11 +14,11 @@
 
     <LinearLayout
         android:id="@+id/loginFormLinearLayout"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:paddingBottom="@dimen/login_form_vertical_padding"
         android:paddingEnd="@dimen/login_form_horizontal_padding"
@@ -26,44 +26,59 @@
         android:paddingTop="@dimen/login_form_vertical_padding">
 
         <EditText
-            android:id="@+id/usernameEditText"
+            android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_form_horizontal_margin"
-            android:layout_marginRight="@dimen/login_form_horizontal_margin"
             android:gravity="center"
-            android:hint="@string/username_hint"
+            android:hint="@string/password_hint"
             android:imeOptions="actionDone"
             android:inputType="text"
-            android:lines="1"/>
+            android:lines="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_group_info_message"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textSize="@dimen/login_button_size"
+            android:background="@color/clouds_material"
+            android:padding="5dp"/>
+
+        <RadioGroup
+            android:id="@+id/userRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <RadioButton
+                android:id="@+id/positiveRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/positive_radio_button_text"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/negativeRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/negative_radio_button_text"/>
+
+        </RadioGroup>
 
         <Button
             android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/login_form_vertical_margin"
+            android:layout_marginTop="20dp"
             android:background="@color/colorAccent"
             android:onClick="test"
             android:text="@string/test_button_text"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/login_button_size" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="signUp"
-            android:text="@string/sign_up_text_view_text"
-            android:textColor="@color/sign_up_text_color" />
 
     </LinearLayout>
 

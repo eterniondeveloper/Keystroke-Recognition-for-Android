@@ -1,7 +1,5 @@
 package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.KeyObject;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,9 +34,13 @@ public class Buffer {
 			// Initialize index
             index = 0;
         }
-		bufferArray[index] = keyObject;
-        index++;
+		bufferArray[index++] = keyObject;
     }
+
+	// removing last object from buffer
+	public void remove() {
+		bufferArray[--index] = null;
+	}
 
 	public KeyObject getCurrent() {
 		return current;

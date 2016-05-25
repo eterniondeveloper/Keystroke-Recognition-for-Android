@@ -3,52 +3,46 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.DBConnector;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
-
 public class MainActivity extends AppCompatActivity {
-
-    // variables
-    public static DBConnector connector;
-    private EditText usernameEditText;
 
     // on create
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        connector = new DBConnector(this, null, null, DBConnector.DATABASE_VERSION);
-    }
-
-    // sign up
-    public void signUp(View view) {
-        Intent i = new Intent(this, SignUpActivity.class);
-        startActivity(i);
     }
 
     // login
     public void test(View view) {
-        usernameEditText = (EditText) findViewById(R.id.usernameEditText);
+        EditText passwordEditText = (EditText) findViewById(R.id.passwordEditText);
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userRadioGroup);
 
-        User user = MainActivity.connector.getUser(usernameEditText.getText().toString());
+        int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
 
-        if(user != null) {
-            Log.i(Helper.USER_LOG, user.toString() + " Exist in Database!");
+        if (!passwordEditText.getText().toString().equals("")) {
 
-            Intent i = new Intent(this, TestingActivity.class);
-            i.putExtra("user", user);
-            startActivity(i);
+            Intent i = new Intent(MainActivity.this, ExtractFeaturesActivity.class);
+            i.putExtra("password", passwordEditText.getText().toString());
+
+            if (checkedRadioButtonId == R.id.positiveRadioButton) {
+                i.putExtra("user", true);
+                startActivity(i);
+            } else if (checkedRadioButtonId == R.id.negativeRadioButton) {
+                i.putExtra("user", false);
+                startActivity(i);
+            } else {
+                Toast.makeText(MainActivity.this, "Please choose a radio button option!!!", Toast.LENGTH_LONG).show();
+            }
+
         } else {
-            Log.i(Helper.USER_LOG, "unsuccessful login");
-            Toast.makeText(MainActivity.this, Helper.INVALID_USERNAME, Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "Password field is empty, type a password!!!", Toast.LENGTH_LONG).show();
         }
+
     }
 
 }

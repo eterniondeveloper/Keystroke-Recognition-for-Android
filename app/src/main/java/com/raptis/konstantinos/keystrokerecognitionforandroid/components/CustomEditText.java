@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 
 import com.raptis.konstantinos.keystrokerecognitionforandroid.core.KeyHandler;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
 
@@ -24,13 +23,13 @@ import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
 public class CustomEditText extends EditText {
 
     private KeyHandler keyHandler;
-    private User user;
     private boolean ready = false;
+    private String password;
 
     // init
-    public void init(User user) {
-        this.user = user;
-        keyHandler = new KeyHandler(user.getPassword().length(), user);
+    public void init(String password) {
+        this.password = password;
+        keyHandler = new KeyHandler(password);
     }
 
     // constructor
@@ -67,7 +66,7 @@ public class CustomEditText extends EditText {
 
         // check if typed password match user password
         // if yes turn line indicator green
-        if(this.getText().toString().equals(user.getPassword())) {
+        if(this.getText().toString().equals(password)) {
             this.getBackground().mutate().setColorFilter(Color.parseColor("#16A085"), PorterDuff.Mode.SRC_ATOP);
             ready = true;
         } else if(this.getText().toString().equals("")) {
@@ -97,10 +96,6 @@ public class CustomEditText extends EditText {
     // return true if editText is empty or false if not
     public boolean isEmpty() {
         return this.getText().toString().trim().length() == 0;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public KeyHandler getKeyHandler() {

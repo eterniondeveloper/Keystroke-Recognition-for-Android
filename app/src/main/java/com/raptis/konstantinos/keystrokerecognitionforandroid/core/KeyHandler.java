@@ -2,8 +2,6 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
 import android.util.Log;
 
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.KeyObject;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.DigraphType;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
@@ -31,19 +29,19 @@ public class KeyHandler {
     private static long timePressed, timeReleased;
     private static KeyObject currentKey;
     private Buffer buffer;
-    private User user;
+    private String password;
 
     // constructor
-    public KeyHandler(int size, User user) {
+    public KeyHandler(String password) {
         // create key map
         keysMap = new HashMap<>();
         for (Key key : keys) {
             keysMap.put(key.getPrimaryCode(), key);
         }
         // initialize buffer
-        buffer = new Buffer(size);
+        buffer = new Buffer(password.length());
         // initialize user
-        this.user = user;
+        this.password = password;
     }
 
     public boolean add(KeyObject keyObject) {
@@ -65,7 +63,7 @@ public class KeyHandler {
          * CHECK IF TYPED KEY EXIST IN THE SAME SPOT THAT BUFFER INDEX CURRENTLY POINT
          */
 
-        if (keyObject.getKeyChar() != user.getPassword().charAt(buffer.getIndex())) {
+        if (keyObject.getKeyChar() != password.toLowerCase().charAt(buffer.getIndex())) {
             return false;
         }
 

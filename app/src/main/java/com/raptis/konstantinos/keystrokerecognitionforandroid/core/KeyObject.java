@@ -1,4 +1,4 @@
-package com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto;
+package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.DigraphType;
 
@@ -23,7 +23,7 @@ public class KeyObject {
     // constructor
     public KeyObject(int primaryCode, Character keyChar, long pressedTime, long releasedTime) {
         this.primaryCode = primaryCode;
-        this.keyChar = keyChar;
+        this.keyChar = keyChar.toString().toLowerCase().charAt(0);
         this.pressedTime = pressedTime;
         this.releasedTime = releasedTime;
     }
