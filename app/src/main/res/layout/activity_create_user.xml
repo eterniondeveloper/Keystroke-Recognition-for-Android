@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.raptis.konstantinos.keystrokerecognitionforandroid.CreateUserActivity">
+
+    <LinearLayout
+        android:id="@+id/loginFormLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/login_form_vertical_padding"
+        android:paddingEnd="@dimen/login_form_horizontal_padding"
+        android:paddingStart="@dimen/login_form_horizontal_padding"
+        android:paddingTop="@dimen/login_form_vertical_padding">
+
+        <EditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="@string/username_hint"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:lines="1" />
+
+        <EditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="@string/password_hint"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:lines="1"
+            />
+
+        <CheckBox
+            android:id="@+id/showPasswordCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_password_check_box_text"
+            android:onClick="showPassword"/>
+
+        <Button
+            android:id="@+id/trainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorAccent"
+            android:onClick="add"
+            android:text="@string/add_button_text"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_button_size" />
+
+    </LinearLayout>
+
+</RelativeLayout>

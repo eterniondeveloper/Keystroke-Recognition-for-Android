@@ -21,7 +21,8 @@ public class Helper {
 
     // useful messages
     public static final String NOT_ALL_FIELDS_FILLED = "You have to fill all fields before SUBMIT";
-    public static final String CONFIRM_MESSAGE = "Are you sure you want to quit sign up procedure, all data will be lost";
+    public static final String CONFIRM_MESSAGE = "Are you sure you want to quit extracting procedure?";
+    public static final String DELETE_USER_MESSAGE = "Are you sure you want to delete current user?";
     public static final String NOT_ALL_FIELDS_FILLED_CORRECTLY = "Password isn't correct in every field!!!";
     public static final String INVALID_PASSWORD = "Invalid Password!!!";
     public static final String INVALID_USERNAME = "Invalid Username!!!";

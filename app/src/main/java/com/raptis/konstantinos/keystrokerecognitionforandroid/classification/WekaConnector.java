@@ -23,8 +23,6 @@ public class WekaConnector {
 
     // set classifier
     public static boolean test(Instances trainingSet, Instances testingSet) throws Exception {
-
-        //LibSVM svm = new LibSVM();
         NaiveBayes nb = new NaiveBayes();
         nb.buildClassifier(trainingSet);
 
@@ -40,9 +38,9 @@ public class WekaConnector {
     //----------------------------------------------------------------------------------------------
 
     // delete ARFF file
-    public static boolean deleteARFF(Context context, String arffName) {
+    public static boolean deleteARFF(Context context, String arffName, boolean isPublic) {
         if(isExternalStorageWritable()) {
-            File file = getARFFStorageDir(context, arffName);
+            File file = isPublic ? getARFFPublicStorageDir(arffName) : getARFFPrivateStorageDir(context, arffName);
             return file.delete();
         } else {
             Log.i(Helper.STORAGE_LOG, "External storage is not writable!");
@@ -51,11 +49,11 @@ public class WekaConnector {
     }
 
     // save to ARFF file
-    public static boolean saveToARFF(Context context, String arffName, Instances instances) throws IOException {
+    public static boolean saveToARFF(Context context, String arffName, Instances instances, boolean isPublic) throws IOException {
         if(!instances.isEmpty() && isExternalStorageWritable()) {
             ArffSaver saver = new ArffSaver();
             saver.setInstances(instances);
-            File file = getARFFStorageDir(context, arffName);
+            File file = isPublic ? getARFFPublicStorageDir(arffName) : getARFFPrivateStorageDir(context, arffName);
             saver.setFile(file);
             saver.setDestination(file);   // **not** necessary in 3.5.4 and later
             saver.writeBatch();
@@ -66,9 +64,9 @@ public class WekaConnector {
     }
 
     // load ARFF file
-    public static Instances loadARFF(Context context, String arffName) throws IOException {
+    public static Instances loadARFF(Context context, String arffName, boolean isPublic) throws IOException {
         if(isExternalStorageReadable()) {
-            File file = getARFFStorageDir(context, arffName);
+            File file = isPublic ? getARFFPublicStorageDir(arffName) : getARFFPrivateStorageDir(context, arffName);
             BufferedReader reader = new BufferedReader(new FileReader(file));
             ArffLoader.ArffReader arff = new ArffLoader.ArffReader(reader);
             Instances data = arff.getData();
@@ -99,9 +97,17 @@ public class WekaConnector {
         return false;
     }
 
-    public static File getARFFStorageDir(Context context, String arffName) {
-        // Get the directory for the app's private pictures directory.
+    public static File getARFFPrivateStorageDir(Context context, String arffName) {
         File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOCUMENTS), arffName);
+        if (!file.mkdirs()) {
+            Log.e(Helper.STORAGE_LOG, "Directory not created");
+        }
+        return file;
+    }
+
+    public static File getARFFPublicStorageDir(String arffName) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOCUMENTS), arffName);
         if (!file.mkdirs()) {
             Log.e(Helper.STORAGE_LOG, "Directory not created");

@@ -3,6 +3,7 @@ package com.raptis.konstantinos.keystrokerecognitionforandroid.classification;
 import android.util.Log;
 
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
+import com.raptis.konstantinos.keystrokerecognitionforandroid.util.TheClass;
 
 import java.util.ArrayList;
 
@@ -57,7 +58,7 @@ public class WekaObject {
     private FastVector fvWekaAttributes;
     private Instances instancesSet;
 
-    public WekaObject(int numFDD, int numFUU, int numFUD, int numFD) {
+    public WekaObject(int numFDD, int numFUU, int numFUD, int numFD, String relation) {
         NUMBER_OF_FDD_FEATURES = numFDD;
         NUMBER_OF_FUU_FEATURES = numFUU;
         NUMBER_OF_FUD_FEATURES = numFUD;
@@ -155,12 +156,12 @@ public class WekaObject {
         /*
         INIT TRAINING SET
          */
-        instancesSet = new Instances("Rel", fvWekaAttributes, 10);
+        instancesSet = new Instances(relation, fvWekaAttributes, 10);
         instancesSet.setClassIndex(instancesSet.numAttributes() - 1);
     }
 
-    public void setInstances(double trFSE, double[] trFDD, double[] trFUU,
-                             double[] trFUD, double[] trFD, double trFAHT, int trFER, String theClass) {
+    public void addInstance(double trFSE, double[] trFDD, double[] trFUU,
+                             double[] trFUD, double[] trFD, double trFAHT, int trFER, TheClass theClass) {
         // fill training set
         Instance instance = new DenseInstance(NUMBER_OF_FEATURES);
         int index = 0;
@@ -196,11 +197,16 @@ public class WekaObject {
 
         // set CLASS attribute
         if(theClass != null) {
-            instance.setValue((Attribute) fvWekaAttributes.elementAt(index), theClass);
+            instance.setValue((Attribute) fvWekaAttributes.elementAt(index), theClass.getLabel());
         }
 
         // add instance to training set
         instancesSet.add(instance);
+    }
+
+    // set Instances set
+    public void setInstancesSet(Instances instancesSet) {
+        this.instancesSet = instancesSet;
     }
 
     // display training set

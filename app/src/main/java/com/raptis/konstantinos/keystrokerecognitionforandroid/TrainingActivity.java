@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -18,7 +19,6 @@ import com.raptis.konstantinos.keystrokerecognitionforandroid.classification.Wek
 import com.raptis.konstantinos.keystrokerecognitionforandroid.components.CustomEditText;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.core.Buffer;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.core.KeyFactory;
-import com.raptis.konstantinos.keystrokerecognitionforandroid.db.DBConnector;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.db.dto.User;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.TheClass;
@@ -26,10 +26,12 @@ import com.raptis.konstantinos.keystrokerecognitionforandroid.util.TheClass;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import weka.core.Instances;
+
 /**
- * Created by konstantinos on 25/5/2016.
+ * Created by konstantinos on 27/5/2016.
  */
-public class ExtractFeaturesActivity extends AppCompatActivity {
+public class TrainingActivity extends AppCompatActivity {
 
     // variables
     private CustomEditText extract1;
@@ -41,17 +43,32 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
     private User user;
     private WekaObject set;
     private RadioGroup radioGroup;
+    private Instances oldTraining;
 
     // on create
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_extract_features);
+        setContentView(R.layout.activity_training);
         setTitle("Training User Model");
 
         radioGroup = (RadioGroup) findViewById(R.id.userRadioGroup);
 
         user = (User) getIntent().getSerializableExtra("user");
+
+        // load old training set
+        if (user != null) {
+            try {
+                oldTraining = WekaConnector.loadARFF(getApplicationContext(), user.getTrainArffName(), true);
+                boolean isDeleted = WekaConnector.deleteARFF(getApplicationContext(), user.getTrainArffName(), true);
+                Log.i(Helper.RESULT_LOG, "old arff deleted: " + isDeleted);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(Helper.DB_LOG, "User is null");
+            return;
+        }
 
         // get training editTexts
         extract1 = (CustomEditText) findViewById(R.id.extractingPasswordEdiText1);
@@ -95,6 +112,8 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
                 if(set == null) {
                     set = new WekaObject(tempFDD.length, tempFUU.length,
                             tempFUD.length, tempFD.length, user.getPassword());
+                    // adding old training here
+                    set.setInstancesSet(oldTraining);
                 }
 
                 if(checkedRadioButtonId == R.id.positiveRadioButton) {
@@ -117,7 +136,7 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
             }
 
         } else {
-            Toast.makeText(ExtractFeaturesActivity.this, Helper.NOT_ALL_FIELDS_FILLED_CORRECTLY, Toast.LENGTH_LONG).show();
+            Toast.makeText(TrainingActivity.this, Helper.NOT_ALL_FIELDS_FILLED_CORRECTLY, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -129,7 +148,7 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
         LayoutInflater li = LayoutInflater.from(this);
         View dialogView = li.inflate(R.layout.extract_features_dialog, null);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ExtractFeaturesActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(TrainingActivity.this);
         builder.setView(dialogView);
 
         TextView textView = (TextView) dialogView.findViewById(R.id.arffFileNameTextView);
@@ -143,9 +162,7 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int option) {
                         if(set != null) {
                             try {
-                                // add user in database
-                                DBConnector connector = new DBConnector(getApplicationContext(), null, null, DBConnector.DATABASE_VERSION);
-                                boolean isAdded = connector.addUser(user);
+
                                 // save user arff train file
                                 WekaConnector.saveToARFF(getApplicationContext(),
                                         user.getTrainArffName(), set.getInstancesSet(), true);
@@ -154,9 +171,9 @@ public class ExtractFeaturesActivity extends AppCompatActivity {
                             }
                         }
 
-                        Intent i = new Intent(ExtractFeaturesActivity.this, MainActivity.class);
+                        Intent i = new Intent(TrainingActivity.this, MainActivity.class);
                         startActivity(i);
-                        ExtractFeaturesActivity.this.finish();
+                        TrainingActivity.this.finish();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
