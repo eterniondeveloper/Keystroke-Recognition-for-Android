@@ -1,5 +1,9 @@
 package com.raptis.konstantinos.keystrokerecognitionforandroid.core;
 
+import android.util.Log;
+
+import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Helper;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,14 +29,8 @@ public class Buffer {
 		}
 		
 		if (index >= BUFFER_SIZE) {
-			// Any pre - empty buffer operations here
-			//--------------------------------------------------------------------------------------
-
-			//--------------------------------------------------------------------------------------
-			// Empty buffer here
-			bufferArray = new KeyObject[BUFFER_SIZE];
-			// Initialize index
-            index = 0;
+			Log.i(Helper.BUFFER_LOG, "Buffer is full");
+			return;
         }
 		bufferArray[index++] = keyObject;
     }

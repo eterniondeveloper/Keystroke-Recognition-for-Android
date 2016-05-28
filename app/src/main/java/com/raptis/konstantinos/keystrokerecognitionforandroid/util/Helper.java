@@ -18,6 +18,7 @@ public class Helper {
     public static final String DB_LOG = "dblog";
     public static final String STORAGE_LOG = "storagelog";
     public static final String RESULT_LOG = "resultlog";
+    public static final String BUFFER_LOG = "bufferlog";
 
     // useful messages
     public static final String NOT_ALL_FIELDS_FILLED = "You have to fill all fields before SUBMIT";

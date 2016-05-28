@@ -8,6 +8,7 @@ import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Key;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Orientation;
 import com.raptis.konstantinos.keystrokerecognitionforandroid.util.Status;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -30,6 +31,7 @@ public class KeyHandler {
     private static KeyObject currentKey;
     private Buffer buffer;
     private String password;
+    private ArrayList<Character> history;
 
     // constructor
     public KeyHandler(String password) {
@@ -40,6 +42,8 @@ public class KeyHandler {
         }
         // initialize buffer
         buffer = new Buffer(password.length());
+        // initialize history
+        history = new ArrayList<>();
         // initialize user
         this.password = password;
     }
@@ -54,17 +58,59 @@ public class KeyHandler {
         if (keysMap.get(keyObject.getPrimaryCode()).getStatus() == Status.INACTIVE) {
             // check if delete pressed
             if (keyObject.getPrimaryCode() == Key.DELETE_BUTTON.getPrimaryCode()) {
+                if (history.size() <= buffer.getSize()) {
+                    // to avoid exception
+                    if(buffer.getElement(history.size() - 1) != null) {
+                        if (history.get(history.size() - 1) == buffer.getElement(history.size() - 1).getKeyChar()) {
+                            buffer.remove();
+                        }
+                    }
+                }
+                // to avoid exception
+                if (history.size() > 0) {
+                    history.remove(history.size() - 1);
+                }
                 errorRateCounter++;
             }
             return false; // we don't want to buffer status = inactive keys
         }
 
         /**
+         * ADD ACTIVE KEY IN HISTORY LIST
+         */
+
+        history.add(keyObject.getKeyChar());
+
+        /**
          * CHECK IF TYPED KEY EXIST IN THE SAME SPOT THAT BUFFER INDEX CURRENTLY POINT
          */
 
+        // to avoid exception
+        if (buffer.getIndex() >= password.length()) {
+            return false;
+        }
+
         if (keyObject.getKeyChar() != password.toLowerCase().charAt(buffer.getIndex())) {
             return false;
+        }
+
+        // to avoid exception
+        if (history.size() - 2 > password.length() - 2) {
+            return false;
+        }
+
+        for (int i = 2; i <= history.size(); i++) {
+            if (history.size() - i < 0) {
+                continue;
+            }
+
+            if (history.size() - i > password.length() - i) {
+                return false;
+            }
+
+            if (password.toLowerCase().charAt(history.size() - i) != history.get(history.size() - i)) {
+                return false;
+            }
         }
 
         /**
@@ -82,6 +128,8 @@ public class KeyHandler {
             DigraphType digraphType = getDigraphType(keyObject);
             keyObject.setDigraphType(digraphType);
         }
+
+        Log.i(Helper.BUFFER_LOG, "Add: " + keyObject.toString());
         return true;
     }
 
