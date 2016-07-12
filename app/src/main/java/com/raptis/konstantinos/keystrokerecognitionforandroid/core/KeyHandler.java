@@ -61,6 +61,8 @@ public class KeyHandler {
                 if (history.size() <= buffer.getSize()) {
                     // to avoid exception
                     if(buffer.getElement(history.size() - 1) != null) {
+                        // remove an element from buffer only if that element exist in
+                        // the same spot in buffer and in history arrayList
                         if (history.get(history.size() - 1) == buffer.getElement(history.size() - 1).getKeyChar()) {
                             buffer.remove();
                         }
@@ -93,6 +95,10 @@ public class KeyHandler {
         if (keyObject.getKeyChar() != password.toLowerCase().charAt(buffer.getIndex())) {
             return false;
         }
+
+        /**
+         * CHECK ALL HISTORY CHAR BY CHAR WITH PASSWORD IN ORDER TO VALIDATE THAT NO MISTAKES HAS BEEN TAKE PLACE
+         */
 
         // to avoid exception
         if (history.size() - 2 > password.length() - 2) {

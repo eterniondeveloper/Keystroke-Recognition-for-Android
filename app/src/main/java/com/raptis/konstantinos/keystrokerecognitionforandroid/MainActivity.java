@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -119,11 +122,27 @@ public class MainActivity extends AppCompatActivity {
                 switch ((int) currentClassDouble) {
                     case 0:
                         currentClassString = TheClass.POSITIVE.getLabel();
-                        Toast.makeText(MainActivity.this, currentClassString, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MainActivity.this, currentClassString, Toast.LENGTH_LONG).show();
+                        LayoutInflater inflater1 = getLayoutInflater();
+                        View cmToastView1 = inflater1.inflate(R.layout.custom_toast_layout,
+                                (ViewGroup) findViewById(R.id.customToastLinearLayout));
+                        ImageView resultImageView1 = (ImageView) cmToastView1.findViewById(R.id.resultImageView);
+                        resultImageView1.setImageResource(R.mipmap.success);
+                        Toast cmToast1 = new Toast(MainActivity.this);
+                        cmToast1.setView(cmToastView1);
+                        cmToast1.show();
                         break;
                     case 1:
                         currentClassString = TheClass.NEGATIVE.getLabel();
-                        Toast.makeText(MainActivity.this, currentClassString, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MainActivity.this, currentClassString, Toast.LENGTH_LONG).show();
+                        LayoutInflater inflater2 = getLayoutInflater();
+                        View cmToastView2 = inflater2.inflate(R.layout.custom_toast_layout,
+                                (ViewGroup) findViewById(R.id.customToastLinearLayout));
+                        ImageView resultImageView2 = (ImageView) cmToastView2.findViewById(R.id.resultImageView);
+                        resultImageView2.setImageResource(R.mipmap.failure);
+                        Toast cmToast2 = new Toast(MainActivity.this);
+                        cmToast2.setView(cmToastView2);
+                        cmToast2.show();
                         break;
                     default:
                         Toast.makeText(MainActivity.this, "UNKNOWN", Toast.LENGTH_LONG).show();
